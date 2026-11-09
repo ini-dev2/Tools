@@ -1,0 +1,11 @@
+#region USINGS
+
+using System;
+
+#endregion USINGS
+
+    #ROOTNAMESPACEBEGIN#
+internal sealed class #SCRIPTNAME#
+{
+}
+#ROOTNAMESPACEEND#

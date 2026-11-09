@@ -1,0 +1,12 @@
+#region USINGS
+
+using System;
+using UnityEngine;
+
+#endregion USINGS
+
+    #ROOTNAMESPACEBEGIN#
+internal sealed class #SCRIPTNAME# : MonoBehaviour
+{
+}
+#ROOTNAMESPACEEND#

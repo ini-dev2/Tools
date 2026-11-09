@@ -1,0 +1,17 @@
+#region USINGS
+
+using System;
+using Zenject;
+using UnityEngine;
+
+#endregion USINGS
+
+    #ROOTNAMESPACEBEGIN#
+internal sealed class #SCRIPTNAME# : MonoInstaller
+{
+    public override void InstallBindings()
+    {
+         #NOTRIM#
+    }
+}
+#ROOTNAMESPACEEND#

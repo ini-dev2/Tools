@@ -1,0 +1,11 @@
+#region USINGS
+
+using System;
+
+#endregion USINGS
+
+    #ROOTNAMESPACEBEGIN#
+public interface #SCRIPTNAME# : IDisposable
+{
+}
+#ROOTNAMESPACEEND#
