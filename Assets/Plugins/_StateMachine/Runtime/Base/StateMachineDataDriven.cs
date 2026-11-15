@@ -3,19 +3,20 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using D = UnityEngine.Debug;
 
 #endregion USINGS
 
 namespace UniStateMachine.Runtime
 {
-    public class StateMachineDataDriven<T> : ScriptableObject, IStateMachine<T>
+    public class StateMachineDataDriven<T> : ScriptableObject, IStateMachine<T>, IDisposable
     {
         private readonly Dictionary<T, IState<T>> _states = new();
-        private T _currentStateId;
+        [NonSerialized] private T _currentStateId;
 
         protected IState<T> CurrentState => _states[_currentStateId];
 
-        private bool _hasCurrentState;
+        [NonSerialized] private bool _hasCurrentState;
 
         public StateMachineDataDriven()
         {
@@ -110,6 +111,29 @@ namespace UniStateMachine.Runtime
 
             _currentStateId = stateId;
             _hasCurrentState = true;
+        }
+
+        public IState TryGetState(T stateId)
+        {
+            if (!_states.TryGetValue(stateId, out var state))
+            {
+                D.LogError($"Cant find state with id: {stateId}");
+                return null;
+            }
+
+            return state;
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in _states)
+            {
+                item.Value.Dispose();
+            }
+
+            _states.Clear();
+
+            _hasCurrentState = false;
         }
     }
 }

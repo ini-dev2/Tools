@@ -15,5 +15,7 @@ namespace UniStateMachine.Runtime
 
         void Remove(T stateId);
         void Remove(IState<T> state);
+
+        IState TryGetState(T stateId);
     }
 }

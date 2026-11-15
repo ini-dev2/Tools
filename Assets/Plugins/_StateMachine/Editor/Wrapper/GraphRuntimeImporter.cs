@@ -21,16 +21,19 @@ namespace UniStateMachine.Editor
             var graph = GraphDatabase.LoadGraphForImporter<StateMachineGraph>(ctx.assetPath);
             if (graph == null)
             {
-                D.LogError($"Failed to load graph asset: {ctx.assetPath}");
+                D.LogError($"[{nameof(GraphRuntimeImporter)}] Failed to load graph asset: {ctx.assetPath}");
                 return;
             }
 
             var startNodeModel = graph.GetNodes().OfType<StartNode>().FirstOrDefault();
-            if (startNodeModel == null) return;
+            if (startNodeModel == null)
+            {
+                D.LogError($"[{nameof(GraphRuntimeImporter)}] No StartNode found in graph: {ctx.assetPath}");
+                return;
+            }
 
             var runtimeAsset = ScriptableObject.CreateInstance<StringKeyStateMachine>();
 
-            // Первый этап: BFS собирает все узлы состояний и записывает отношение "текущий узел → следующие узлы"
             var visited = new HashSet<INode>();
             var queue = new Queue<INode>();
             var nextMap = new Dictionary<INode, List<INode>>();
@@ -50,23 +53,69 @@ namespace UniStateMachine.Editor
                     queue.Enqueue(next);
             }
 
+            if (nextMap.Count == 0)
+            {
+                D.LogError($"[{nameof(GraphRuntimeImporter)}] Graph has no reachable state nodes from StartNode: {ctx.assetPath}");
+                return;
+            }
+
+            var usedIds = new HashSet<string>();
+
             foreach (var kvp in nextMap)
             {
                 var node = kvp.Key;
                 if (node is not StateNodeBase stateNode) continue;
-                if (!stateNode.TryGetStateId(out var stateId)) continue;
+                if (!stateNode.TryGetStateId(out var stateId))
+                {
+                    D.LogWarning($"[{nameof(GraphRuntimeImporter)}] StateNode {node.GetType().Name} has no enum value. Skipping.");
+                    continue;
+                }
+
+                string id = stateId.ToString();
+
+                if (!usedIds.Add(id))
+                {
+                    D.LogError($"[{nameof(GraphRuntimeImporter)}] Duplicate state id '{id}' detected in graph '{ctx.assetPath}'. Node: {node.GetType().Name}. Skipping duplicate.");
+                    continue;
+                }
+
+                var nextNodes = kvp.Value;
+
+                if (nextNodes.Count > 1)
+                {
+                    D.LogWarning($"[{nameof(GraphRuntimeImporter)}] State '{id}' has {nextNodes.Count} outgoing branches. Only the first one will be used. Multiple branches are not supported by StringState.");
+                }
 
                 string nextId = null;
-                var nextNodes = kvp.Value;
                 if (nextNodes.Count > 0 && nextNodes[0] is StateNodeBase nextStateNode)
                 {
                     if (nextStateNode.TryGetStateId(out var nextEnum))
                         nextId = nextEnum.ToString();
+                    else
+                        D.LogWarning($"[{nameof(GraphRuntimeImporter)}] Next node of state '{id}' has no enum value. nextId will be empty.");
+                }
+                else if (nextNodes.Count > 0)
+                {
+                    D.LogWarning($"[{nameof(GraphRuntimeImporter)}] Next node of state '{id}' is not a StateNodeBase ({nextNodes[0].GetType().Name}). nextId will be empty.");
+                }
+
+                if (!string.IsNullOrEmpty(nextId) && !usedIds.Contains(nextId))
+                {
                 }
 
                 runtimeAsset.editorStates.Add(
-                    new StringState(stateId.ToString(), nextId ?? string.Empty, runtimeAsset)
+                    new StringState(id, nextId ?? string.Empty)
                 );
+            }
+
+            var allIds = new HashSet<string>(runtimeAsset.editorStates.Select(s => s.Id));
+            foreach (var state in runtimeAsset.editorStates)
+            {
+                var nextId = GetNextId(state);
+                if (!string.IsNullOrEmpty(nextId) && !allIds.Contains(nextId))
+                {
+                    D.LogError($"[{nameof(GraphRuntimeImporter)}] State '{state.Id}' references non-existent next state '{nextId}' in graph '{ctx.assetPath}'.");
+                }
             }
 
             runtimeAsset.Build();
@@ -91,5 +140,6 @@ namespace UniStateMachine.Editor
             }
             return result;
         }
+        static string GetNextId(StringState state) => null;
     }
 }

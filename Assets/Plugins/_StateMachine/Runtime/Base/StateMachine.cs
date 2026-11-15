@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using D = UnityEngine.Debug;
+
 #endregion USINGS
 
 namespace UniStateMachine.Runtime
@@ -109,6 +111,17 @@ namespace UniStateMachine.Runtime
 
             _currentStateId = stateId;
             _hasCurrentState = true;
+        }
+
+        public IState TryGetState(T stateId)
+        {
+            if (!_states.TryGetValue(stateId, out var state))
+            {
+                D.LogError($"Cant find state with id: {stateId}");
+                return null;
+            }
+
+            return state;
         }
     }
 }

@@ -14,10 +14,9 @@ namespace UniStateMachine.Runtime
 
         [SerializeField] private string _nextNodeId;
 
-        [HideInInspector]
-        private StringKeyStateMachine _stringKeyStateMachine;
-
         public string Id => _id;
+        public string NextId => _nextNodeId;
+
 
 #if UNITY_EDITOR
         public StringState(string id)
@@ -25,10 +24,9 @@ namespace UniStateMachine.Runtime
             _id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
-        public StringState(string id, string nextNodeId, StringKeyStateMachine stringKeyStateMachine) : this(id)
+        public StringState(string id, string nextNodeId) : this(id)
         {
             _nextNodeId = nextNodeId ?? throw new ArgumentNullException(nameof(nextNodeId));
-            _stringKeyStateMachine = stringKeyStateMachine ?? throw new ArgumentNullException(nameof(stringKeyStateMachine));
         }
 #endif
 
@@ -42,12 +40,13 @@ namespace UniStateMachine.Runtime
 
         public void Exit()
         {
-            if (!string.IsNullOrEmpty(_nextNodeId))
-            {
-                _stringKeyStateMachine.SetState(_nextNodeId);
-            }
-
             OnExit?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            OnEnter = null;
+            OnExit = null;
         }
     }
 }

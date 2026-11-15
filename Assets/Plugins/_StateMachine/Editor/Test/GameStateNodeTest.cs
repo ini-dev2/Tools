@@ -9,13 +9,7 @@ namespace UniStateMachine.Editor
 {
     [Serializable]
     [UseWithGraph(typeof(StateMachineGraph))]
-    internal class GameStateNodeTest : StateNode<GameStateNodeTest.GameStateId>
+    internal class GameStateNodeTest : StateNode<GameStateId>
     {
-        public enum GameStateId
-        {
-            Intro,
-            Gameplay,
-            Pause
-        }
     }
 }
