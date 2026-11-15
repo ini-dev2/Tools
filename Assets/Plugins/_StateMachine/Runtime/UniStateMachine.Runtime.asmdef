@@ -1,7 +1,9 @@
 {
     "name": "UniStateMachine.Runtime",
     "rootNamespace": "UniStateMachine.Runtime",
-    "references": [],
+    "references": [
+        "GUID:70ef9a24f4cfc4aec911c1414e3f90ad"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

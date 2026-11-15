@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace UniStateMachine.Runtime
 {
-    public class StateMachine<T> : IStateMachine<T> where T : Enum
+    public class StateMachine<T> : IStateMachine<T>
     {
         private readonly Dictionary<T, IState<T>> _states = new();
         private T _currentStateId;
@@ -49,7 +49,7 @@ namespace UniStateMachine.Runtime
             _states.Add(stateId, state);
         }
 
-        protected void Register(IState<T> state)
+        public void Register(IState<T> state)
         {
             Register(state.Id, state);
         }
@@ -75,6 +75,11 @@ namespace UniStateMachine.Runtime
             }
 
             _states.Remove(stateId);
+        }
+
+        public void Remove(IState<T> state)
+        {
+            Remove(state.Id);
         }
 
         public void SetState(T stateId)
