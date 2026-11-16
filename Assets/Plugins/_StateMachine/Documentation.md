@@ -11,6 +11,7 @@ A graph-based, data-driven state machine for Unity. Build state graphs visually 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
+- [Graph Preview](#graph-preview)
 - [Editor Components](#editor-components)
   - [StateMachineGraph](#statemachinegraph)
   - [Nodes](#nodes)
@@ -110,6 +111,27 @@ Editor                                       Runtime
 │          StateNode     │──Importer───────► │              StringState[]
 │                        │  (ScriptableObj)  │
 └────────────────────────┘                   └───────────────────────────┘
+```
+
+---
+
+## Graph Preview
+
+Here's what the graph editor looks like when you build a simple state machine:
+
+![State machine graph preview](Docs/Images/graph-preview.png)
+
+*Example: a `StartNode` connected to `Idle`, which chains to `Running` and `Stopped`. Each state node exposes a `CurrentState` enum option and input/output execution ports.*
+
+> **To add your own screenshot:** place the image under `Docs/Images/` in the repository and reference it with a relative path as shown above. GitHub renders relative image paths in README files. You can also drag-and-drop an image into the GitHub web editor to get an auto-generated URL.
+
+**Example layout of a graph asset:**
+
+```
+┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐
+│ StartNode │────►│  Idle     │────►│  Running  │────►│  Stopped  │
+└───────────┘     └───────────┘     └───────────┘     └───────────┘
+                   [Idle]            [Running]          [Stopped]
 ```
 
 ---
