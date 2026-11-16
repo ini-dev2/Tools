@@ -119,7 +119,7 @@ Editor                                       Runtime
 
 Here's what the graph editor looks like when you build a simple state machine:
 
-![Preview](Assets/Plugins/_StateMachine/Images/Preview.jpg)
+![Preview](Tools/Assets/Plugins/_StateMachine/Images/Preview.jpg)
 
 *Example: a `StartNode` connected to `Idle`, which chains to `Running` and `Stopped`. Each state node exposes a `CurrentState` enum option and input/output execution ports.*
 
