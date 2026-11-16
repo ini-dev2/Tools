@@ -9,131 +9,43 @@ using D = UnityEngine.Debug;
 
 namespace UniStateMachine.Runtime
 {
-    public class StateMachineDataDriven<T> : ScriptableObject, IStateMachine<T>, IDisposable
+    public class StateMachineDataDriven : ScriptableObject, IStateMachine<string>
     {
-        private readonly Dictionary<T, IState<T>> _states = new();
-        [NonSerialized] private T _currentStateId;
+        private readonly StateMachine<string> stateMachine = new();
 
-        protected IState<T> CurrentState => _states[_currentStateId];
-
-        [NonSerialized] private bool _hasCurrentState;
-
-        public StateMachineDataDriven()
+        public void Register(string stateId, IState<string> state)
         {
+            stateMachine.Register(stateId, state);
         }
 
-        public StateMachineDataDriven(IEnumerable<IState<T>> states)
+        public void Register(IState<string> state)
         {
-            foreach (var state in states)
-            {
-                Register(state);
-            }
+            stateMachine.Register(state);
         }
 
-        public void Register(T stateId, IState<T> state)
+        public void Remove(string stateId)
         {
-            if (stateId == null)
-            {
-                throw new ArgumentNullException(nameof(stateId));
-            }
-
-            if (state == null)
-            {
-                throw new ArgumentNullException(nameof(state));
-            }
-
-            if (_states.ContainsKey(stateId))
-            {
-                throw new InvalidOperationException(
-                    $"State with id '{stateId}' is already registered.");
-            }
-
-            _states.Add(stateId, state);
+            stateMachine.Remove(stateId);
         }
 
-        public void Register(IState<T> state)
+        public void Remove(IState<string> state)
         {
-            Register(state.Id, state);
+            stateMachine.Remove(state);
         }
 
-        public void Remove(T stateId)
+        public void SetState(string stateId)
         {
-            if (stateId == null)
-            {
-                throw new ArgumentNullException(nameof(stateId));
-            }
-
-            if (!_states.ContainsKey(stateId))
-            {
-                throw new InvalidOperationException(
-                    $"State with id '{stateId}' is not registered.");
-            }
-
-            if (_hasCurrentState && EqualityComparer<T>.Default.Equals(stateId, _currentStateId))
-            {
-                throw new InvalidOperationException(
-                    $"Cannot remove currently active state '{stateId}'. " +
-                    $"Switch to another state first.");
-            }
-
-            _states.Remove(stateId);
+            stateMachine.SetState(stateId);
         }
 
-        public void Remove(IState<T> state)
+        public IState TryGetState(string stateId)
         {
-            Remove(state.Id);
-        }
-
-        public void SetState(T stateId)
-        {
-            if (stateId == null)
-            {
-                throw new ArgumentNullException(nameof(stateId));
-            }
-
-            if (!_states.TryGetValue(stateId, out var nextState))
-            {
-                throw new InvalidOperationException(
-                    $"State with id '{stateId}' is not registered.");
-            }
-
-            if (_hasCurrentState && EqualityComparer<T>.Default.Equals(stateId, _currentStateId))
-            {
-                return;
-            }
-
-            if (_hasCurrentState)
-            {
-                _states[_currentStateId].Exit();
-            }
-
-            nextState.Enter();
-
-            _currentStateId = stateId;
-            _hasCurrentState = true;
-        }
-
-        public IState TryGetState(T stateId)
-        {
-            if (!_states.TryGetValue(stateId, out var state))
-            {
-                D.LogError($"Cant find state with id: {stateId}");
-                return null;
-            }
-
-            return state;
+            return stateMachine.TryGetState(stateId);
         }
 
         public void Dispose()
         {
-            foreach (var item in _states)
-            {
-                item.Value.Dispose();
-            }
-
-            _states.Clear();
-
-            _hasCurrentState = false;
+            stateMachine.Dispose();
         }
     }
 }

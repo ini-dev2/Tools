@@ -22,11 +22,11 @@ namespace UniStateMachine.Runtime
         {
         }
 
-        public StateMachine(IEnumerable<IState<T>> states)
+        public void Build(IState<T>[] states)
         {
-            foreach (var state in states)
+            foreach (var item in states)
             {
-                Register(state);
+                Register(item);
             }
         }
 
@@ -122,6 +122,18 @@ namespace UniStateMachine.Runtime
             }
 
             return state;
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in _states)
+            {
+                item.Value.Dispose();
+            }
+
+            _states.Clear();
+
+            _hasCurrentState = false;
         }
     }
 }

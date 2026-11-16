@@ -6,7 +6,7 @@ using System;
 
 namespace UniStateMachine.Runtime
 {
-    public interface IStateMachine<T>
+    public interface IStateMachine<T> : IDisposable
     {
         void SetState(T stateId);
 

@@ -9,7 +9,7 @@ using D = UnityEngine.Debug;
 
 namespace UniStateMachine.Runtime
 {
-    public sealed class StringKeyStateMachine : StateMachineDataDriven<string>
+    public sealed class StringKeyStateMachine : StateMachineDataDriven
     {
         [SerializeField] private StringState[] _states;
 
