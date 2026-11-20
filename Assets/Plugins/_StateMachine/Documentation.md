@@ -54,10 +54,7 @@ A graph-based, data-driven state machine for Unity. Build state graphs visually 
 ## Installation
 
 1. Install **Unity GraphToolkit** via the Package Manager (add by name: `com.unity.graphtoolkit`).
-2. Clone or copy the repository into your project:
-   ```bash
-   git clone https://github.com/ini-dev2/WebRTCWrapper.git
-   ```
+2. Clone or copy the repository into your project
 3. The editor and runtime assemblies (`UniStateMachine.Editor`, `UniStateMachine.Runtime`) will be picked up automatically.
 
 ---
